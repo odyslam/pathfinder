@@ -479,19 +479,22 @@ mod tests {
         let transaction_data2 = [(txn3, receipt3), (txn4, receipt4), (txn5, receipt5)];
         StarknetTransactionsTable::insert_block_transactions(
             &db_txn,
-            genesis_hash,
+            block0.hash,
+            block0.number,
             &transaction_data0,
         )
         .unwrap();
         StarknetTransactionsTable::insert_block_transactions(
             &db_txn,
-            block1_hash,
+            block1.hash,
+            block1.number,
             &transaction_data1,
         )
         .unwrap();
         StarknetTransactionsTable::insert_block_transactions(
             &db_txn,
-            latest_hash,
+            block2.hash,
+            block2.number,
             &transaction_data2,
         )
         .unwrap();

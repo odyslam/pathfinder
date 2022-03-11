@@ -458,6 +458,7 @@ async fn l2_update(
         StarknetTransactionsTable::insert_block_transactions(
             &transaction,
             starknet_block.hash,
+            starknet_block.number,
             &transaction_data,
         )
         .context("Insert transaction data into database")?;
