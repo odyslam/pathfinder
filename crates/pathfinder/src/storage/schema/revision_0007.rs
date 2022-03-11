@@ -23,7 +23,8 @@ pub(crate) fn migrate(transaction: &Transaction) -> anyhow::Result<PostMigration
             USING fts5(
                 keys,
                 content='starknet_events',
-                content_rowid='rowid'
+                content_rowid='rowid',
+                tokenize='ascii'
             );
 
             CREATE TRIGGER starknet_events_ai
@@ -121,6 +122,7 @@ pub(crate) fn migrate(transaction: &Transaction) -> anyhow::Result<PostMigration
 
                 let serialized_data: Vec<u8> = event.data.into_iter().flat_map(|e| {e.0.as_be_bytes().clone().into_iter()}).collect();
 
+                // TODO: we really should be using Iterator::intersperse() here once it's stabilized.
                 let serialized_keys: Vec<String> = event.keys.into_iter().map(|key| base64::encode(key.0.as_be_bytes())).collect();
                 let serialized_keys = serialized_keys.join(" ");
 
@@ -316,11 +318,20 @@ mod tests {
                     })
                     .collect();
 
+                let keys = row.get_ref_unwrap("keys").as_str().unwrap();
+                let keys: Vec<EventKey> = keys
+                    .split(' ')
+                    .map(|v| {
+                        EventKey(StarkHash::from_be_slice(&base64::decode(v).unwrap()).unwrap())
+                    })
+                    .collect();
+
                 assert_eq!(BLOCK_NUMBER, block_number);
                 assert_eq!(event_idx, idx);
                 assert_eq!(tx.transaction_hash, transaction_hash);
                 assert_eq!(tx.contract_address, from_address);
                 assert_eq!(event.data, data);
+                assert_eq!(event.keys, keys);
             }
         }
     }
