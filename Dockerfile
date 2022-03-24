@@ -19,8 +19,7 @@ COPY crates/pathfinder/Cargo.toml crates/pathfinder/Cargo.toml
 COPY crates/pedersen/Cargo.toml crates/pedersen/Cargo.toml
 COPY crates/pedersen/benches crates/pedersen/benches
 
-RUN RUSTFLAGS='-L/usr/lib -Ctarget-feature=-crt-static' cargo build --release
-
+RUN cargo build --release
 
 # Compile the actual libraries and binary now
 COPY . .
@@ -29,7 +28,7 @@ COPY . .
 RUN touch crates/pathfinder/src/lib.rs
 RUN touch crates/pedersen/src/lib.rs
 
-RUN RUSTFLAGS='-L/usr/lib -Ctarget-feature=-crt-static' cargo build --release
+RUN cargo build --release
 
 #######################################
 # Stage 2: Build the Python libraries #
